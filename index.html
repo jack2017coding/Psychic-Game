@@ -6,71 +6,80 @@
   </head>
   <body>
     <!-- When we start playing the game, our HTML will be placed into this div. -->
-    <div id="game">
-      <p>Guess what letter I'm thinking of</p>
-    </div>
-    <script type="text/javascript">
-      // Our array of possible computer choices.
-      var computerChoices = ["a" , "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
-      // Variables for tracking our wins, losses and ties. They begin at 0.
-      var wins = 0;
-      var losses = 0;
-      var ties = 0;
-      // When the user presses a key, it will run the following function...
-      document.onkeyup = function(event) {
-        // Determine which key was pressed
-        var userGuess = event.key;
-        // Sets the computerGuess variable equal to a random choice from the computerChoice array.
-        var computerGuess = computerChoices[Math.floor(Math.random() * computerChoices.length)];
-        // Convert user choice to lower case.
-        var userGuessLower = userGuess.toLowerCase();
+  <div id="game">
+    <p id="wins">Wins: </p></li>
+    <p id="losses">Losses: </p></li>
+    <p id="guessLeft">Guesses Left: </p></li>
+    <p id="let">Your Guesses so far: </p></li>
+  </div>
+  <script type="text/javascript">
+    var computerChoices = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
 
-        var userGuessArr = [];
+    //Setting all to zero
+    var wins = 0;
+    var losses = 0;
+    var guesses = 9;
+    var guessesLeft = 9;
+    var guessedLetters = [];
+    var letterToGuess = null;
 
-        userGuessArr.push(userGuessLower);
 
-        // When a user presses a key run the game logic.
-        if (computerGuess === userGuessLower) {
-          wins++
+    //Lets the computer select a random letter from the available choices
+    var computerGuess = computerChoices[Math.floor(Math.random() * computerChoices.length)];
+
+    //User 9 guesses
+    var updateGuessesLeft = function() {
+      // Here we are grabbing the HTML element and setting it equal to the guessesLeft. 
+      document.querySelector('#guessLeft').innerHTML = "Guesses left: " + guessesLeft;
+    };
+
+    var updateLetterToGuess = function() {
+      this.letterToGuess = this.computerChoices[Math.floor(Math.random() * this.computerChoices.length)];
+    };
+
+    var updateGuessesSoFar = function() {
+      // Display it as letters separated by commas. 
+      document.querySelector('#let').innerHTML = "Your Guesses so far: " + guessedLetters.join(', ');
+    };
+
+    // Function will be called when reset
+    var reset = function() {
+      guessesLeft = 9;
+      guessedLetters = [];
+
+      updateLetterToGuess();
+      updateGuessesLeft();
+      updateGuessesSoFar();
+    }
+
+    updateLetterToGuess();
+    updateGuessesLeft();
+
+
+    //When key is released it becomes the users guess
+    document.onkeyup = function(event) {
+    guessesLeft--;
+      var userGuess = String.fromCharCode(event.keyCode).toLowerCase();
+
+      guessedLetters.push(userGuess);
+      updateGuessesLeft();
+      updateGuessesSoFar();
+
+        if (guessesLeft > 0){
+            if (userGuess == letterToGuess){
+                wins++;
+                document.querySelector('#wins').innerHTML = "Wins: " + wins;
+                reset();
+            }
+        }else if(guessesLeft == 0){
+            // Update the html to display the loss 
+            losses++;
+            document.querySelector('#losses').innerHTML = "Losses: " + losses;
+            // Call to reset. 
+            reset();
         }
-        else {
-          losses++
-        }
-      
+    };  
 
-        // if ((userGuess === "r") || (userGuess === "p") || (userGuess === "s")) {
-          // This logic determines the outcome of the game (win/loss/tie), and increments the appropriate counter.
-          // if ((userGuess === "r") && (computerGuess === "s")) {
-          //   wins++;
-          // }
-          // else if ((userGuess === "r") && (computerGuess === "p")) {
-          //   losses++;
-          // }
-          // else if ((userGuess === "s") && (computerGuess === "r")) {
-          //   losses++;
-          // }
-          // else if ((userGuess === "s") && (computerGuess === "p")) {
-          //   wins++;
-          // }
-          // else if ((userGuess === "p") && (computerGuess === "r")) {
-          //   wins++;
-          // }
-          // else if ((userGuess === "p") && (computerGuess === "s")) {
-          //   losses++;
-          // }
-          // else if (userGuess === computerGuess) {
-          //   ties++;
-          // }
-          // Here we create the HTML that will be injected into our div and displayed on the page.
-          var html = "<p>Guess what letter I'm thinking of</p>" +
-          "<p>wins: " + wins + "</p>" +
-          "<p>losses: " + losses + "</p>" +
-          "<p>Your Guesses so far: " + userGuessArr + "</p>" +
-          "<p>ties: " + ties + "</p>";
-          // Injecting the HTML we just created into our div and updating the game information on our page.
-          document.querySelector("#game").innerHTML = html;
-      //   }
-      };
     </script>
   </body>
 </html>
